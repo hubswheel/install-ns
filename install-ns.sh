@@ -110,9 +110,9 @@ if [ $uname = "Darwin" ] ; then
 
     if [ $with_postgres = "1" ] ; then
         # Preconfigured for PostgreSQL 9.6 installed via mac ports
-        pg_incl=/opt/local/include/postgresql96/
-        pg_lib=/opt/local/lib/postgresql96/
-        pg_packages="postgresql96 postgresql96-server"
+        pg_incl=/usr/local/include/
+        pg_lib=/usr/local/lib/
+        pg_packages=""
     fi
 else
     #
