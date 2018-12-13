@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# DAVEB use homebrew openssl libraries
+export LDLIBS=-stdlib=libstdc++
+export LDFLAGS=-L/usr/local/opt/openssl/lib
+export CPPFLAGS=-I/usr/local/opt/openssl/include
+
 do_clean=0
 clean_only=0
 build=0
@@ -490,7 +495,8 @@ set -o errexit
 
 tar xfz tcl${version_tcl}-src.tar.gz
 cd tcl${version_tcl}/unix
-./configure --enable-threads --prefix=${ns_install_dir}
+# DAVEB quick fix for OS X 
+./configure --enable-threads --disable-corefoundation --prefix=${ns_install_dir}
 ${make}
 ${make} install
 
