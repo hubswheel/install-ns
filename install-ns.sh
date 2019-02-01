@@ -1,10 +1,5 @@
 #!/bin/bash
 
-# DAVEB use homebrew openssl libraries
-export LDLIBS=-stdlib=libstdc++
-export LDFLAGS=-L/usr/local/opt/openssl/lib
-export CPPFLAGS=-I/usr/local/opt/openssl/include
-
 do_clean=0
 clean_only=0
 build=0
@@ -31,7 +26,7 @@ build_dir=/usr/local/src
 #build_dir=/usr/local/src/oo2
 ns_install_dir=/usr/local/ns
 #ns_install_dir=/usr/local/oo2
-version_ns=4.99.16
+version_ns=4.99.17
 #version_ns=HEAD
 version_modules=${version_ns}
 #version_modules=HEAD
@@ -114,11 +109,17 @@ if [ $uname = "Darwin" ] ; then
     ns_user_addgroup_hint="dseditgroup -o edit -a YOUR_USERID -t user ${ns_group}"
 
     if [ $with_postgres = "1" ] ; then
-        # Preconfigured for PostgreSQL 9.6 installed via mac ports
-        pg_incl=/usr/local/include/
-        pg_lib=/usr/local/lib/
+        # Preconfigured for PostgreSQL 9.5 installed via homebrew
+        export LDFLAGS="${LDFLAGS} -L/usr/local/opt/postgresql@9.5/lib"
+        export CPPFLAGS="{LDFLAGS} -I/usr/local/opt/postgresql@9.5/include"
         pg_packages=""
     fi
+
+    # DAVEB use homebrew openssl libraries
+    export LDLIBS=-stdlib=libstdc++
+    export LDFLAGS="${LDFLAGS} -L/usr/local/opt/openssl/lib"
+    export CPPFLAGS="{CPPFLAGS} -I/usr/local/opt/openssl/include"
+
 else
     #
     # Not Darwin
@@ -343,7 +344,8 @@ if [ $redhat = "1" ] ; then
 fi
 
 if [ $macosx = "1" ] ; then
-    port install make ${autoconf} zlib wget curl zip unzip openssl ${pg_packages} ${mercurial} ${git} ${mongodb}
+    # we're all using homebrew - need to update this
+    # port install make ${autoconf} zlib wget curl zip unzip openssl ${pg_packages} ${mercurial} ${git} ${mongodb}
 fi
 
 if [ $sunos = "1" ] ; then
@@ -437,7 +439,8 @@ fi
 
 if [ ${version_xotcl} = "LEGACY" ] ; then
    if [ ! -f xotcl-1.6.8.tar.gz ] ; then
-        wget ${wget_options} http://media.wu.ac.at/download/xotcl-1.6.8.tar.gz
+       wget ${wget_options} http://media.wu.ac.at/download/xotcl-1.6.8.tar.gz
+   fi
 elif [ ! ${version_xotcl} = "HEAD" ] ; then
     if [ ! -f nsf${version_xotcl}.tar.gz ] ; then
         wget ${wget_options} https://downloads.sourceforge.net/sourceforge/next-scripting/nsf${version_xotcl}.tar.gz
@@ -498,7 +501,7 @@ set -o errexit
 
 tar xfz tcl${version_tcl}-src.tar.gz
 cd tcl${version_tcl}/unix
-# DAVEB quick fix for OS X 
+# DAVEB quick fix for OS X
 ./configure --enable-threads --disable-corefoundation --prefix=${ns_install_dir}
 ${make}
 ${make} install
